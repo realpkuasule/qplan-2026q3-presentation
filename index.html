@@ -439,9 +439,141 @@
     letter-spacing: 0.05em;
     transition: opacity 0.5s ease;
   }
+
+  /* --- TOC Button & Overlay --- */
+  #toc-btn {
+    position: fixed;
+    top: 16px; left: 16px;
+    z-index: 1001;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.25s ease;
+  }
+  #toc-btn:hover { background: rgba(255,255,255,0.14); }
+  #toc-btn:active { transform: scale(0.93); }
+
+  #toc-overlay {
+    position: fixed; inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  #toc-overlay.open {
+    opacity: 1; visibility: visible;
+  }
+
+  #toc-panel {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 300px; max-width: 82vw;
+    z-index: 1002;
+    background: #1a1a1a;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 24px 20px 80px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-overflow-scrolling: touch;
+    pointer-events: none;
+  }
+  #toc-panel.open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  #toc-panel .toc-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #toc-panel .toc-section {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 18px 0 8px;
+    opacity: 0.7;
+  }
+
+  #toc-panel .toc-link {
+    display: block;
+    padding: 10px 14px;
+    margin: 2px 0;
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+  }
+  #toc-panel .toc-link:hover,
+  #toc-panel .toc-link.active {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+  }
+  #toc-panel .toc-link .toc-num {
+    display: inline-block;
+    width: 22px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-right: 6px;
+  }
 </style>
 </head>
 <body>
+
+<button id="toc-btn" aria-label="目录">☰</button>
+
+<div id="toc-overlay"></div>
+
+<nav id="toc-panel">
+  <div class="toc-header">📋 目录</div>
+
+  <div class="toc-section">总览</div>
+  <a class="toc-link" data-slide="s1"><span class="toc-num">01</span>封面 · 季度业务发展计划</a>
+  <a class="toc-link" data-slide="s2"><span class="toc-num">02</span>季度总目标</a>
+  <a class="toc-link" data-slide="s3"><span class="toc-num">03</span>四条业务线一句话</a>
+  <a class="toc-link" data-slide="s4"><span class="toc-num">04</span>核心财务指标</a>
+  <a class="toc-link" data-slide="s5"><span class="toc-num">05</span>P0 事项</a>
+  <a class="toc-link" data-slide="s6"><span class="toc-num">06</span>最大风险</a>
+
+  <div class="toc-section">业务全景</div>
+  <a class="toc-link" data-slide="s7"><span class="toc-num">07</span>季度关键里程碑</a>
+  <a class="toc-link" data-slide="s8"><span class="toc-num">08</span>跨线依赖矩阵</a>
+
+  <div class="toc-section">业务线详情</div>
+  <a class="toc-link" data-slide="s9"><span class="toc-num">09</span>小P老师 · 业务总负责</a>
+  <a class="toc-link" data-slide="s10"><span class="toc-num">10</span>流量线 · 六金</a>
+  <a class="toc-link" data-slide="s11"><span class="toc-num">11</span>销售线 · 木兰</a>
+  <a class="toc-link" data-slide="s12"><span class="toc-num">12</span>公开课线 · 小P老师</a>
+  <a class="toc-link" data-slide="s13"><span class="toc-num">13</span>交付+AI线 · 小智老师</a>
+
+  <div class="toc-section">总结 & 差距分析</div>
+  <a class="toc-link" data-slide="s14"><span class="toc-num">14</span>各业务线进度速览</a>
+  <a class="toc-link" data-slide="s15"><span class="toc-num">15</span>7月：理想 vs 现实目标</a>
+  <a class="toc-link" data-slide="s16"><span class="toc-num">16</span>管理动作：弥补线索缺口</a>
+</nav>
 
 <div id="progress"></div>
 
@@ -1094,7 +1226,42 @@
   const dotsContainer = document.getElementById('nav-dots');
   const progress = document.getElementById('progress');
   const keyHint = document.getElementById('key-hint');
+  const tocBtn = document.getElementById('toc-btn');
+  const tocPanel = document.getElementById('toc-panel');
+  const tocOverlay = document.getElementById('toc-overlay');
+  const tocLinks = document.querySelectorAll('#toc-panel .toc-link');
   let current = 0;
+  let tocOpen = false;
+
+  // TOC toggle
+  function openToc() {
+    tocOpen = true;
+    tocPanel.classList.add('open');
+    tocOverlay.classList.add('open');
+    tocBtn.textContent = '✕';
+    tocBtn.style.fontSize = '18px';
+  }
+  function closeToc() {
+    tocOpen = false;
+    tocPanel.classList.remove('open');
+    tocOverlay.classList.remove('open');
+    tocBtn.textContent = '☰';
+    tocBtn.style.fontSize = '20px';
+  }
+  tocBtn.addEventListener('click', () => tocOpen ? closeToc() : openToc());
+  tocOverlay.addEventListener('click', closeToc);
+
+  // TOC link click → scroll to slide + close
+  tocLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const id = link.dataset.slide;
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        closeToc();
+      }
+    });
+  });
 
   // Build nav dots
   slides.forEach((s, i) => {
@@ -1116,6 +1283,9 @@
       current = best;
       document.querySelectorAll('#nav-dots .dot').forEach((d, i) => d.classList.toggle('active', i === current));
       progress.style.width = ((current / (slides.length - 1)) * 100) + '%';
+      // Update TOC active link
+      const slideId = slides[current].id;
+      tocLinks.forEach(l => l.classList.toggle('active', l.dataset.slide === slideId));
     }
   }
 
@@ -1127,6 +1297,7 @@
 
   // Keyboard nav
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && tocOpen) { e.preventDefault(); closeToc(); return; }
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
       e.preventDefault();
       const next = Math.min(current + 1, slides.length - 1);
